@@ -7,6 +7,21 @@ and Jumon follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-14
+
+### Fixed
+
+- The palette knows when the LiveView loses its connection (the hook's
+  `disconnected` and `reconnected`). A search says "Not connected" for
+  each source that had no reply, and keeps the results that came before,
+  where it said "Searching…" until the reload. An action that runs on the
+  server or pushes an event says "Not connected", and the palette stays
+  open, where it waited for a reply that never came. The `offline`
+  message is used at last.
+- After a reconnection, an open palette searches again: the LiveView is a
+  new process, which knows none of the results of the old one, so a
+  result in the list gave "That did not work".
+
 ## [0.1.1] - 2026-10-14
 
 ### Fixed

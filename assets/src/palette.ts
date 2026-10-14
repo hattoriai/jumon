@@ -48,6 +48,8 @@ interface Remote {
   results: Map<string, ActionData[]>;
   pending: Set<string>;
   errors: Set<string>;
+  /** The sources without a reply when the LiveView lost its connection. */
+  offline: Set<string>;
 }
 
 type Bound = { kind: "open" } | { kind: "help" } | { kind: "action"; action: Item };
@@ -95,6 +97,7 @@ export class Palette {
   private menuState: { items: Item[]; active: number; of: Item } | null = null;
   private confirming: { action: Item; values?: Record<string, string | null> } | null = null;
   private busy = false;
+  private online = true;
   private returnFocus: HTMLElement | null = null;
   private sequences = new Sequences<Bound>([]);
   private onKeydown = (event: KeyboardEvent) => this.globalKeydown(event);
@@ -159,6 +162,35 @@ export class Palette {
     this.applyMessages();
     this.index();
     if (this.isOpen) this.refresh();
+  }
+
+  /**
+   * The LiveView lost its connection, or found it again (the hook's
+   * `disconnected` and `reconnected`). Without one, a search or an action
+   * on the server gets no reply: the palette says so, and searches again
+   * when the connection comes back.
+   */
+  setConnected(connected: boolean): void {
+    if (this.online === connected) return;
+    this.online = connected;
+    if (!connected) {
+      if (this.busy) {
+        this.busy = false;
+        this.searchIcon.classList.remove("jumon-busy");
+        this.showOffline();
+      }
+      if (this.remote && this.remote.pending.size > 0) {
+        this.remote.offline = this.remote.pending;
+        this.remote.pending = new Set();
+      }
+    } else {
+      if (this.message.dataset.offline !== undefined) this.clearMessage();
+      // The LiveView of the new connection is a new process, which knows
+      // only the results of its own searches: search again, and keep the
+      // results in view until the new ones come.
+      if (this.remote) this.remote.key = "";
+    }
+    this.refresh();
   }
 
   destroy(): void {
@@ -727,6 +759,7 @@ export class Palette {
     this.searchArg(page, arg, query);
     const remote = this.remote;
     const results = remote?.results.get("_arg");
+    if (remote?.offline.has("_arg")) return [{ kind: "status", text: this.t("offline"), tone: "error" }];
     if (remote?.errors.has("_arg")) return [{ kind: "status", text: this.t("error"), tone: "error", retry: true }];
     if (!results) return [{ kind: "status", text: this.t("loading"), tone: "loading" }];
     if (results.length === 0) return remote && remote.pending.size > 0 ? [{ kind: "status", text: this.t("loading"), tone: "loading" }] : [{ kind: "status", text: this.t("noResults"), tone: "empty" }];
@@ -736,18 +769,24 @@ export class Palette {
   private remoteRows(): Row[] {
     const remote = this.remote;
     if (!remote) return [];
+    // No source answered: one line says so, not one under each heading.
+    if (remote.offline.size > 0 && remote.results.size === 0 && remote.pending.size === 0) {
+      return [{ kind: "status", text: this.t("offline"), tone: "error" }];
+    }
     const rows: Row[] = [];
     for (const source of this.config.sources) {
       const results = remote.results.get(source.name);
       const pending = remote.pending.has(source.name);
       const failed = remote.errors.has(source.name);
-      if (!results && !pending && !failed) continue;
+      const offline = remote.offline.has(source.name);
+      if (!results && !pending && !failed && !offline) continue;
       const items = (results ?? []).filter((action) => this.available(action));
-      if (items.length === 0 && !pending && !failed) continue;
+      if (items.length === 0 && !pending && !failed && !offline) continue;
       rows.push({ kind: "heading", label: source.label });
       for (const action of items) rows.push({ kind: "item", action, positions: score(action, remote.query)?.positions ?? [] });
       if (pending && items.length === 0) rows.push({ kind: "status", text: this.t("loading"), tone: "loading" });
       if (failed) rows.push({ kind: "status", text: this.t("error"), tone: "error", retry: true });
+      if (offline) rows.push({ kind: "status", text: this.t("offline"), tone: "error" });
     }
     return rows;
   }
@@ -778,11 +817,18 @@ export class Palette {
   // list does not flash while the person types.
   private startSearch(key: string, query: string, extra: Record<string, string>, names: string[], immediate = false): void {
     const previous = this.remote;
-    const remote: Remote = { ref: ++this.refCounter, query, key, results: previous?.results ?? new Map(), pending: new Set(names), errors: new Set() };
+    const remote: Remote = { ref: ++this.refCounter, query, key, results: previous?.results ?? new Map(), pending: new Set(names), errors: new Set(), offline: new Set() };
     this.remote = remote;
     if (this.debounce) clearTimeout(this.debounce);
     const send = () => {
       if (this.remote !== remote) return;
+      if (!this.online) {
+        remote.results = new Map();
+        remote.offline = new Set(names);
+        remote.pending = new Set();
+        this.refresh();
+        return;
+      }
       this.live!.push("jumon:search", { v: 1, ref: remote.ref, query, ...extra }, (reply) => {
         if (this.remote !== remote || reply.ref !== remote.ref) return;
         const results = (reply.results ?? {}) as Record<string, ActionData[]>;
@@ -1176,6 +1222,13 @@ export class Palette {
     this.message.hidden = true;
     this.message.replaceChildren();
     delete this.message.dataset.kind;
+    delete this.message.dataset.offline;
+  }
+
+  // Marked, so that the connection's return clears it.
+  private showOffline(): void {
+    this.showMessage(this.t("offline"), "error");
+    this.message.dataset.offline = "";
   }
 
   private perform(action: Item, alternate: boolean): void {
@@ -1223,6 +1276,10 @@ export class Palette {
         return;
       }
       case "event":
+        if (this.live && !this.online) {
+          this.showOffline();
+          return;
+        }
         this.live?.pushEvent(perform.event ?? "", perform.value ?? {}, perform.target);
         done();
         return;
@@ -1245,6 +1302,10 @@ export class Palette {
   private runServer(action: Item, values: Record<string, string | null>): void {
     if (!this.live) return;
     if (this.busy) return;
+    if (!this.online) {
+      this.showOffline();
+      return;
+    }
     this.busy = true;
     this.searchIcon.classList.add("jumon-busy");
     this.live.push("jumon:run", { v: 1, id: action.id, args: values }, (reply) => {

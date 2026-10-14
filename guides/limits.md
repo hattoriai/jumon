@@ -16,9 +16,11 @@ cannot add actions of its own; its LiveView adds them with
 ## Results run while the LiveView remembers them
 
 The hook remembers the last thousand results that its searches gave a
-LiveView, so that they can run on the server. A result older than that,
-or from before a reconnection, gives "That did not work" and needs a new
-search.
+LiveView, so that they can run on the server. A result older than that
+gives "That did not work" and needs a new search. After a reconnection,
+the LiveView is a new process that remembers none of them: an open
+palette searches again, and keeps the results in view until the new ones
+come.
 
 ## The matcher reads code points
 
