@@ -16,11 +16,16 @@ const NAMED: Record<string, string> = {
   del: "delete",
 };
 
-/** Whether the device is an Apple one, where `mod` is ⌘. */
+/**
+ * Whether the device is an Apple one, where `mod` is ⌘. The platform says
+ * which keys the keyboard has; the user agent, which may say Mac on
+ * another system (an emulated Safari), only when there is no platform.
+ */
 export function isApple(): boolean {
   if (typeof navigator === "undefined") return false;
-  const platform = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ?? navigator.platform ?? "";
-  return /mac|iphone|ipad|ipod/i.test(platform) || (/mac/i.test(navigator.userAgent) && !/android/i.test(navigator.userAgent));
+  const platform = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform || navigator.platform || "";
+  if (platform !== "") return /mac|iphone|ipad|ipod/i.test(platform);
+  return /mac|iphone|ipad|ipod/i.test(navigator.userAgent) && !/android/i.test(navigator.userAgent);
 }
 
 const isLetter = (key: string): boolean => /^[a-z]$/.test(key);

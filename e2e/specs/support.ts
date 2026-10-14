@@ -9,9 +9,18 @@ export async function openPage(page: Page, path = "/"): Promise<void> {
   await expect(page.locator(".jumon.jumon-ready")).toBeAttached();
 }
 
-/** The modifier of `mod` in this browser's platform. */
+/**
+ * The modifier of `mod` in this browser, by the palette's own rule (isApple
+ * in assets/src/keys.ts): the platform, else the user agent. An emulated
+ * Safari on Linux says Mac in its user agent only.
+ */
 export async function mod(page: Page): Promise<string> {
-  return (await page.evaluate(() => /mac|iphone|ipad/i.test(navigator.platform))) ? "Meta" : "Control";
+  const apple = await page.evaluate(() => {
+    const platform = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform || navigator.platform || "";
+    if (platform !== "") return /mac|iphone|ipad|ipod/i.test(platform);
+    return /mac|iphone|ipad|ipod/i.test(navigator.userAgent) && !/android/i.test(navigator.userAgent);
+  });
+  return apple ? "Meta" : "Control";
 }
 
 /** Opens the palette with its shortcut. */
