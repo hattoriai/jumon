@@ -1,6 +1,7 @@
 // The Jumon hook for a LiveSocket, and `mountJumon` for a page without
 // LiveView. The hook makes a Palette of its element, gives it the server's
-// later renders (`updated`), and passes the events of Jumon.Live
+// later renders (`updated`) and the state of the connection
+// (`disconnected`, `reconnected`), and passes the events of Jumon.Live
 // (jumon:results, jumon:open, jumon:close) to it.
 
 import { Palette, type Live } from "./palette";
@@ -63,6 +64,14 @@ export const Jumon = {
 
   updated(this: JumonHook) {
     this.palette?.update();
+  },
+
+  disconnected(this: JumonHook) {
+    this.palette?.setConnected(false);
+  },
+
+  reconnected(this: JumonHook) {
+    this.palette?.setConnected(true);
   },
 
   destroyed(this: JumonHook) {

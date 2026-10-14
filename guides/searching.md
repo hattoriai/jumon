@@ -90,6 +90,15 @@ the new ones come, so the list does not flicker.
 The palette shows the results of a source in the order the source gives
 them, under its heading, after the matching actions.
 
+### Without a connection
+
+While the LiveView has no connection, a source cannot answer: the
+palette says "Not connected" for each source that had no reply (once,
+when none did), and keeps the results that came before. An action that
+runs on the server or pushes an event says "Not connected" too, and the
+palette stays open. When the connection comes back, the palette searches
+again.
+
 ## Telemetry
 
 Every search of a source or of an argument is a
