@@ -25,6 +25,7 @@ test("single keys do nothing in a text field", async ({ page }) => {
 test("? lists the keyboard shortcuts", async ({ page }) => {
   await page.keyboard.press("Shift+?");
   await expect(page.locator(".jumon-crumb")).toHaveText(["Keyboard shortcuts"]);
+  await expect(page.locator(".jumon-input")).toHaveAttribute("placeholder", "Filter…");
   await expect(page.locator(".jumon-list [role=option]").filter({ hasText: "People" }).locator("kbd")).toHaveText(["G", "P"]);
 });
 

@@ -184,6 +184,14 @@
   font-size: var(--jumon-input-size);
 }
 
+/* No outline on the box: the panel is the focus. Two classes win over an
+   app's own :focus-visible outline, which is as specific as .jumon-input
+   alone and comes later in its style sheet. */
+.jumon .jumon-input:focus,
+.jumon .jumon-input:focus-visible {
+  outline: 0;
+}
+
 .jumon-input::placeholder {
   color: var(--jumon-muted);
   opacity: 1;

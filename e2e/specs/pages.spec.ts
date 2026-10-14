@@ -9,6 +9,8 @@ test("an action with children opens their page, and Backspace goes back", async 
   await page.keyboard.press("Enter");
   await expect(page.locator(".jumon-crumb")).toHaveText(["Theme"]);
   await expect(input(page)).toHaveValue("");
+  // The breadcrumb names the page; the box does not say it again.
+  await expect(input(page)).toHaveAttribute("placeholder", "Filter…");
   expect(await names(page)).toEqual(["Light", "Dark", "Sumi", "Sumi, dark"]);
   await page.keyboard.press("Backspace");
   await expect(page.locator(".jumon-crumbs")).toBeHidden();
