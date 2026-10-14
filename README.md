@@ -1,6 +1,6 @@
 # Jumon
 
-![Jumon — Commands for Phoenix](media/banner.png)
+![Jumon — Commands for Phoenix](https://raw.githubusercontent.com/hattoriai/jumon/main/media/banner.png)
 
 Jumon (呪文, "spell") is a command palette for Phoenix. It gives your app:
 
@@ -28,7 +28,20 @@ Jumon (呪文, "spell") is a command palette for Phoenix. It gives your app:
 The palette is a prebuilt JavaScript bundle in the Hex package. Your app
 does not run Node.js for it: you add the hook and one style sheet.
 
-![The Jumon palette in the development app: sections of actions with the app's icons, shortcuts, pages of children and arguments, and a danger tone](media/palette.png)
+![The Jumon palette in the development app: sections of actions with the app's icons, shortcuts, pages of children and arguments, and a danger tone](https://raw.githubusercontent.com/hattoriai/jumon/main/media/palette.png)
+
+## Try it: Notebook
+
+![Jumon in Notebook: the query "page" finds an action of the page being read, the notebook's own actions with their shortcuts, and a page from a search of the server](https://raw.githubusercontent.com/hattoriai/jumon/main/media/notebook-palette.png)
+
+[Notebook](https://github.com/hattoriai/notebook) is a complete Phoenix
+app made with Jumon, Kotoba and Koyomi. Its palette searches the pages on
+the server (a typo in a title is forgiven, with `Jumon.Match`), adds the
+actions of the page you read (rename it, set its due date, copy its
+link), offers a day of the notebook's calendar on a page of children, and
+keeps each person's history in SQLite. Clone it, run `mix setup` and
+`mix phx.server`, sign in as Hattori Hanzo (its README has the details)
+and press ⌘K.
 
 ## What the palette does
 
