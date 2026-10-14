@@ -1,0 +1,16 @@
+{
+  "name": "jumon",
+  "version": "0.1.0",
+  "license": "MIT",
+  "module": "./priv/static/jumon.esm.js",
+  "main": "./priv/static/jumon.cjs.js",
+  "exports": {
+    ".": {
+      "import": "./priv/static/jumon.esm.js",
+      "require": "./priv/static/jumon.cjs.js"
+    }
+  },
+  "files": [
+    "priv/static"
+  ]
+}

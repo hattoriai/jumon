@@ -1,0 +1,226 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # The history in the database is tested on SQLite and on PostgreSQL.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Erlang and Elixir exactly as in .tool-versions.
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          version-file: .tool-versions
+          version-type: strict
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: mix-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            mix-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-
+
+      - uses: actions/cache@v4
+        with:
+          path: priv/plts
+          key: plt-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            plt-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-
+
+      # All environments: credo and the tests run in :test, ex_doc and
+      # dialyxir in :dev.
+      - run: mix deps.get
+
+      # The bundles are built only for a release. Empty files let the
+      # package compile and the tests run without Node.js; the tests that
+      # need the real bundle are tagged :build, and the e2e job builds.
+      - name: Seed fake assets
+        run: |
+          mkdir -p priv/static
+          touch priv/static/jumon.esm.js priv/static/jumon.cjs.js priv/static/jumon.css priv/static/jumon-sumi.css
+
+      - run: mix format --check-formatted
+
+      - run: mix compile --warnings-as-errors
+        env:
+          MIX_ENV: test
+
+      - run: mix credo --strict
+        env:
+          MIX_ENV: test
+
+      - run: mix docs
+        env:
+          MIX_ENV: dev
+
+      - run: mix test --exclude build
+        env:
+          MIX_ENV: test
+
+      - run: mix dialyzer
+        env:
+          MIX_ENV: dev
+
+  # The lowest Elixir that mix.exs accepts (~> 1.18, for the built-in JSON
+  # module), so that the floor stays true. Format, credo, docs and
+  # dialyzer run only in the test job. OTP 27.2.2, not 27.2: before it,
+  # public_key refused a CA certificate with the serverAuth extended key
+  # usage, as in the chain of builds.hex.pm, so setup-beam could not
+  # install Rebar or Hex.
+  floor:
+    runs-on: ubuntu-latest
+
+    # The history in the database is tested on SQLite and on PostgreSQL.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: "1.18.3"
+          otp-version: "27.2.2"
+          version-type: strict
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: mix-floor-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            mix-floor-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-
+
+      - name: Seed fake assets
+        run: |
+          mkdir -p priv/static
+          touch priv/static/jumon.esm.js priv/static/jumon.cjs.js priv/static/jumon.css priv/static/jumon-sumi.css
+
+      - run: mix deps.get
+
+      - run: mix compile --warnings-as-errors
+        env:
+          MIX_ENV: test
+
+      - run: mix test --exclude build
+        env:
+          MIX_ENV: test
+
+  # The unit tests of the TypeScript modules, and the type check.
+  js:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+          cache-dependency-path: assets/package-lock.json
+
+      - run: npm ci
+        working-directory: assets
+
+      - run: npm run typecheck
+        working-directory: assets
+
+      - run: npm test
+        working-directory: assets
+
+  # One job for each browser engine. The Chromium job keeps the name "e2e".
+  e2e:
+    name: ${{ matrix.browser == 'chromium' && 'e2e' || format('e2e ({0})', matrix.browser) }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Erlang and Elixir exactly as in .tool-versions.
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          version-file: .tool-versions
+          version-type: strict
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+          cache-dependency-path: |
+            assets/package-lock.json
+            e2e/package-lock.json
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: mix-e2e-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            mix-e2e-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-
+
+      - run: mix deps.get
+
+      - run: npm ci
+        working-directory: assets
+
+      - run: npm ci
+        working-directory: e2e
+
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+        working-directory: e2e
+
+      # The Playwright web server runs `mix jumon.build` (the real bundle)
+      # and starts `mix dev` without watchers.
+      - run: mix test.e2e
+        env:
+          CI: "true"
+          E2E_BROWSERS: ${{ matrix.browser }}
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: |
+            e2e/test-results
+            e2e/playwright-report
+          retention-days: 7

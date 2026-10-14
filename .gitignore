@@ -1,0 +1,14 @@
+/_build
+/deps
+/doc
+/cover
+/priv/plts
+assets/node_modules
+e2e/node_modules
+/priv/static/*
+/tmp
+e2e/test-results
+e2e/playwright-report
+erl_crash.dump
+jumon-*.tar
+*.ez

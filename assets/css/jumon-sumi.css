@@ -1,0 +1,95 @@
+/*
+ * Jumon in the Sumi theme.
+ *
+ * Load this file after jumon.css. It gives every --jumon-* property a
+ * Sumi value, in this order, as kotoba-sumi.css and koyomi-sumi.css do:
+ *
+ *   1. the Sumi tokens of the page: --font-body, --color-sumi-blade,
+ *      --color-sumi-ember, --sumi-text-muted, and the theme colours of the
+ *      Sumi daisyUI themes (--color-base-100, -200, -300,
+ *      --color-base-content, --color-primary-content, --color-error,
+ *      --radius-box);
+ *   2. the short --sumi-* names (--sumi-font, --sumi-ink, --sumi-paper,
+ *      --sumi-surface, --sumi-line, --sumi-muted, --sumi-accent,
+ *      --sumi-accent-ink, --sumi-radius), for a page that sets them itself;
+ *   3. the Sumi palette below, so that the palette looks like Sumi on a
+ *      page with no Sumi tokens.
+ *
+ * Dark and light: on a page with the Sumi themes, the palette follows them
+ * (their colours change with data-theme). Without them, the built-in
+ * palette follows the data-theme attribute ("dark" or "light") first, then
+ * prefers-color-scheme.
+ */
+
+/* The Sumi palette, light. */
+:root,
+[data-theme] {
+  --jumon-sumi-base-100: oklch(96% 0.01 85);
+  --jumon-sumi-base-200: oklch(93% 0.012 85);
+  --jumon-sumi-base-300: oklch(89% 0.014 80);
+  --jumon-sumi-content: oklch(15% 0.003 270);
+  --jumon-sumi-muted: oklch(15% 0.003 270 / 0.62);
+  --jumon-sumi-error: oklch(55% 0.22 25);
+}
+
+/* The Sumi palette, dark: data-theme="dark", or a dark preference on a page
+   that does not ask for light. */
+[data-theme="dark"] {
+  --jumon-sumi-base-100: oklch(12% 0.003 270);
+  --jumon-sumi-base-200: oklch(16% 0.004 270);
+  --jumon-sumi-base-300: oklch(22% 0.005 270);
+  --jumon-sumi-content: oklch(95% 0.012 85);
+  --jumon-sumi-muted: oklch(95% 0.012 85 / 0.55);
+  --jumon-sumi-error: oklch(62% 0.2 25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --jumon-sumi-base-100: oklch(12% 0.003 270);
+    --jumon-sumi-base-200: oklch(16% 0.004 270);
+    --jumon-sumi-base-300: oklch(22% 0.005 270);
+    --jumon-sumi-content: oklch(95% 0.012 85);
+    --jumon-sumi-muted: oklch(95% 0.012 85 / 0.55);
+    --jumon-sumi-error: oklch(62% 0.2 25);
+  }
+}
+
+/* The mapping. */
+:root,
+[data-theme] {
+  /* Type */
+  --jumon-font: var(--font-body, var(--sumi-font, "Outfit", system-ui, sans-serif));
+  --jumon-font-size: 0.9375rem;
+  --jumon-input-size: 1.0625rem;
+  --jumon-small: 0.8125rem;
+
+  /* Colours */
+  --jumon-text: var(--color-base-content, var(--sumi-ink, var(--jumon-sumi-content)));
+  --jumon-muted: var(--sumi-text-muted, var(--sumi-muted, var(--jumon-sumi-muted)));
+  --jumon-background: var(--color-base-100, var(--sumi-paper, var(--jumon-sumi-base-100)));
+  --jumon-surface: var(--color-base-200, var(--sumi-surface, var(--jumon-sumi-base-200)));
+  --jumon-border: var(--color-base-300, var(--sumi-line, var(--jumon-sumi-base-300)));
+  --jumon-accent: var(--color-sumi-blade, var(--sumi-accent, #e84a1c));
+  --jumon-accent-text: var(--color-primary-content, var(--sumi-accent-ink, oklch(98% 0.005 85)));
+  /* The active row is a wash of ink with a blade edge; the blade marks
+     what matched, which a Sumi page keeps for what needs attention. */
+  --jumon-active: color-mix(in oklab, var(--color-base-content, var(--sumi-ink, var(--jumon-sumi-content))) 6%, transparent);
+  --jumon-active-text: var(--color-base-content, var(--sumi-ink, var(--jumon-sumi-content)));
+  --jumon-active-bar: var(--color-sumi-blade, var(--sumi-accent, #e84a1c));
+  --jumon-match: var(--color-sumi-blade, var(--sumi-accent, #e84a1c));
+  --jumon-danger: color-mix(in oklab, var(--color-error, var(--jumon-sumi-error)) 85%, var(--jumon-text));
+  --jumon-key-background: var(--color-base-200, var(--sumi-surface, var(--jumon-sumi-base-200)));
+  --jumon-key-border: var(--color-base-300, var(--sumi-line, var(--jumon-sumi-base-300)));
+  --jumon-key-text: var(--sumi-text-muted, var(--sumi-muted, var(--jumon-sumi-muted)));
+  --jumon-focus-ring: 0 0 0 2px var(--jumon-background), 0 0 0 4px var(--color-sumi-blade, var(--sumi-accent, #e84a1c));
+
+  /* The panel: paper on a veil of ink. */
+  --jumon-radius: var(--radius-box, var(--sumi-radius, 0.375rem));
+  --jumon-inner-radius: calc(var(--radius-box, var(--sumi-radius, 0.375rem)) * 0.75);
+  --jumon-shadow: 0 24px 64px -16px color-mix(in oklab, var(--color-sumi-ink, #0a0a0b) 40%, transparent), 0 0 0 1px var(--color-base-300, var(--sumi-line, var(--jumon-sumi-base-300)));
+  --jumon-backdrop: color-mix(in oklab, var(--color-sumi-ink, #0a0a0b) 40%, transparent);
+
+  /* Shape and space */
+  --jumon-space: 0.5rem;
+  --jumon-icon-size: 16px;
+}
