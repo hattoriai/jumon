@@ -1,6 +1,6 @@
 {
   "name": "jumon",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "module": "./priv/static/jumon.esm.js",
   "main": "./priv/static/jumon.cjs.js",

@@ -7,6 +7,23 @@ and Jumon follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-14
+
+### Fixed
+
+- An app's own `:focus-visible` outline no longer draws a frame around
+  the search box. A global rule in an app's style sheet is as specific as
+  `.jumon-input`, and comes later; the palette's rule now has two
+  classes.
+
+### Changed
+
+- On a page of children and on the keyboard shortcuts page, the box says
+  "Filter…" (the new `filter` message, in the eight languages), and no
+  longer repeats the name of the page, which the breadcrumb shows.
+- The README's images point at raw.githubusercontent.com, so that they
+  show on hex.pm, and the README has a "Try it: Notebook" section.
+
 ## [0.1.0] - 2026-10-14
 
 ### Added

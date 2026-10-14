@@ -493,13 +493,14 @@ export class Palette {
     const page = this.page();
     this.input.value = page.query;
     let placeholder = this.t("placeholder");
-    if (page.kind === "children") placeholder = page.action.name;
+    // The breadcrumb names a page of children and the shortcuts already.
+    if (page.kind === "children") placeholder = this.t("filter");
     if (page.kind === "arg") {
       const arg = page.action.args![page.index]!;
       placeholder = arg.placeholder ?? arg.label;
       if (arg.optional) placeholder += ` (${this.t("optional")})`;
     }
-    if (page.kind === "help") placeholder = this.t("shortcuts");
+    if (page.kind === "help") placeholder = this.t("filter");
     this.input.placeholder = placeholder;
     this.input.readOnly = false;
     this.renderCrumbs();

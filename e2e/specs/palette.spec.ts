@@ -104,3 +104,10 @@ test("what one runs comes back under Recent", async ({ page }) => {
   expect(await names(page)).toContain("People");
   await expect(page.locator(".jumon-recent").first()).toBeVisible();
 });
+
+test("an app's own focus outline stays off the box", async ({ page }) => {
+  // As an app's style sheet does: as specific as .jumon-input, and later.
+  await page.addStyleTag({ content: ":focus-visible { outline: 2px solid red; }" });
+  await openPalette(page);
+  await expect(input(page)).toHaveCSS("outline-style", "none");
+});
