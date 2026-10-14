@@ -210,6 +210,7 @@ export class Palette {
     if (this.dialog.open) this.dialog.close();
     else this.dialog.removeAttribute("open");
     this.root.dispatchEvent(new CustomEvent("jumon:closed", { bubbles: true }));
+    if (document.activeElement === this.input) this.input.blur();
     const focus = this.returnFocus;
     this.returnFocus = null;
     if (focus && focus.isConnected) focus.focus({ preventScroll: true });
@@ -373,7 +374,9 @@ export class Palette {
   }
 
   private inputKeydown(event: KeyboardEvent): void {
-    if (event.isComposing || event.keyCode === 229) return;
+    // A closed palette's box may keep the focus (WebKit, with nothing to
+    // give it back to): its keys are the page's, as when it is closed.
+    if (!this.isOpen || event.isComposing || event.keyCode === 229) return;
     const chord = eventChord(event, this.apple);
     const mod = this.apple ? event.metaKey : event.ctrlKey;
     // Ctrl+N and Ctrl+P move, as in Emacs and cmdk; on Apple devices also
