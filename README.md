@@ -65,14 +65,14 @@ and press ⌘K.
 ## Install
 
 Jumon needs Elixir 1.18 or later (it uses the built-in `JSON` module),
-Phoenix 1.8 and Phoenix LiveView 1.2.
+Phoenix 1.7.14 or 1.8, and Phoenix LiveView 1.1 or later.
 
 Add `jumon` to the deps in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:jumon, "~> 0.1"}
+    {:jumon, "~> 0.2"}
   ]
 end
 ```

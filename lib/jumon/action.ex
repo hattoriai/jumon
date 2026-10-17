@@ -355,8 +355,10 @@ defmodule Jumon.Action do
     |> Map.new()
   end
 
-  defp perform_to_client({:js, js}),
-    do: %{"type" => "js", "js" => js |> JS.to_encodable() |> Phoenix.json_library().encode!()}
+  # The commands as LiveView encodes them: the ops that JS.to_encodable/1
+  # returns on LiveView 1.2, a function that LiveView 1.1 does not have.
+  defp perform_to_client({:js, %JS{ops: ops}}),
+    do: %{"type" => "js", "js" => Phoenix.json_library().encode!(ops)}
 
   defp perform_to_client({:copy, text}), do: %{"type" => "copy", "text" => text}
   defp perform_to_client({:run, _fun}), do: %{"type" => "server"}

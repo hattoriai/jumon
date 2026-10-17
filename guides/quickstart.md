@@ -1,14 +1,16 @@
 # Quickstart
 
-This guide adds a command palette to a Phoenix 1.8 app, from the
-dependency to the first action that runs on the server.
+This guide adds a command palette to a Phoenix app, from the dependency
+to the first action that runs on the server. It shows a Phoenix 1.8 app;
+[Phoenix 1.7](#phoenix-1-7) differs only in where the palette is
+rendered.
 
 ## Install
 
 Add `jumon` to the deps in `mix.exs`, and run the installer:
 
 ```elixir
-{:jumon, "~> 0.1"}
+{:jumon, "~> 0.2"}
 ```
 
 ```sh
@@ -81,6 +83,21 @@ and pass `@jumon` on from each LiveView:
 ```
 
 Press ⌘K (Ctrl+K on Linux and Windows): the palette opens with "Home".
+
+### Phoenix 1.7
+
+In a Phoenix 1.7 app, the LiveViews render inside the layout template
+`lib/my_app_web/components/layouts/app.html.heex`, which has their
+assigns. Render the palette there, with no `attr` and nothing to pass on:
+
+```heex
+<Jumon.Components.command_palette jumon={@jumon}>
+  <:icon :let={name}><.icon name={name} class="h-4 w-4" /></:icon>
+</Jumon.Components.command_palette>
+```
+
+Jumon needs LiveView 1.1 or later; a Phoenix 1.7 app on LiveView 1.0
+upgrades it first (see LiveView's changelog for 1.1).
 
 ## An action on the server
 
