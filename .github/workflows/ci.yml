@@ -84,13 +84,17 @@ jobs:
           MIX_ENV: dev
 
   # The lowest Elixir that mix.exs accepts (~> 1.18, for the built-in JSON
-  # module), so that the floor stays true. Format, credo, docs and
-  # dialyzer run only in the test job. OTP 27.2.2, not 27.2: before it,
+  # module), with the lowest Phoenix (1.7) and LiveView (1.1) that it
+  # accepts (JUMON_OLDEST), so that the floors stay true. Format, credo,
+  # docs and dialyzer run only in the test job. OTP 27.2.2, not 27.2: before it,
   # public_key refused a CA certificate with the serverAuth extended key
   # usage, as in the chain of builds.hex.pm, so setup-beam could not
   # install Rebar or Hex.
   floor:
     runs-on: ubuntu-latest
+
+    env:
+      JUMON_OLDEST: "1"
 
     # The history in the database is tested on SQLite and on PostgreSQL.
     services:
@@ -121,14 +125,17 @@ jobs:
           path: |
             deps
             _build
-          key: mix-floor-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
+          key: mix-oldest-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
           restore-keys: |
-            mix-floor-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-
+            mix-oldest-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-
 
       - name: Seed fake assets
         run: |
           mkdir -p priv/static
           touch priv/static/jumon.esm.js priv/static/jumon.cjs.js priv/static/jumon.css priv/static/jumon-sumi.css
+
+      # mix.lock has the newest Phoenix and LiveView: resolve the oldest.
+      - run: mix deps.update phoenix phoenix_live_view
 
       - run: mix deps.get
 

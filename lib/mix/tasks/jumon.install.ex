@@ -167,7 +167,8 @@ defmodule Mix.Tasks.Jumon.Install do
           on_mount: [{MyAppWeb.UserAuth, :mount_current_scope}, {Jumon.Live, MyAppWeb.Commands}] do
 
     and render the palette in your layout (lib/my_app_web/components/layouts.ex),
-    with @jumon passed on to it (<Layouts.app flash={@flash} jumon={@jumon}>):
+    with @jumon passed on to it (<Layouts.app flash={@flash} jumon={@jumon}>),
+    or, in a Phoenix 1.7 app, in layouts/app.html.heex:
 
         <Jumon.Components.command_palette jumon={@jumon}>
           <:icon :let={name}><.icon name={name} class="size-4" /></:icon>

@@ -7,7 +7,14 @@ and Jumon follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.1.2] - 2026-10-14
+## [0.2.0] - 2026-10-17
+
+### Added
+
+- Phoenix 1.7 and LiveView 1.1 are supported: Jumon needs Phoenix
+  1.7.14 or 1.8 (it needed 1.8) and LiveView 1.1 or later (it needed
+  1.2). The quickstart and `mix jumon.install` say where the palette goes
+  in a Phoenix 1.7 app, and CI tests the oldest versions.
 
 ### Fixed
 
