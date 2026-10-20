@@ -1,0 +1,114 @@
+name: Bug report
+description: Something in Jumon does not work as the docs say.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. A security problem goes to a private report instead (see SECURITY.md).
+
+  - type: input
+    id: jumon
+    attributes:
+      label: Jumon version
+      description: From `mix.lock`, or `mix deps | grep jumon`.
+      placeholder: "0.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: stack
+    attributes:
+      label: Elixir, OTP, Phoenix and LiveView versions
+      placeholder: "Elixir 1.20.1, OTP 29, Phoenix 1.8.1, LiveView 1.1.14"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where it happens
+      options:
+        - The palette in a LiveView (Jumon.Live)
+        - A page without LiveView (mountJumon())
+        - An action that runs on the server, or its arguments
+        - A source of the server
+        - Shortcuts
+        - The history
+        - mix jumon.install
+        - Jumon.Test
+        - Something else
+    validations:
+      required: true
+
+  - type: dropdown
+    id: history
+    attributes:
+      label: History
+      options:
+        - In the browser (localStorage)
+        - In memory (Jumon.History.Memory)
+        - Ecto on PostgreSQL
+        - Ecto on SQLite
+        - A history of my own
+        - None, or not about the history
+
+  - type: input
+    id: database
+    attributes:
+      label: Database and adapter
+      description: For a history with Ecto.
+      placeholder: "PostgreSQL 16, postgrex 0.21"
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      description: For what the palette shows or does, its shortcuts and its keys.
+      placeholder: "Safari 26, macOS 26"
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: The smallest commands module that shows it
+      description: The `actions/1` and `sources/1` (and the `put_actions/3` of the page, if any), the `live_session` it is mounted in, or a link to a small repository.
+      render: elixir
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      placeholder: |
+        1. Press ⌘K
+        2. Type "inv"
+        3. Choose "Invite someone…" and enter an email
+        4. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: The error and its stacktrace, from the server log or the browser console, and what the palette said.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I use a release from Hex, not `main`.
+          required: true
+        - label: I searched the open and closed issues.
+          required: true

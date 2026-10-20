@@ -1,0 +1,39 @@
+name: Feature request
+description: An idea, or a change to what Jumon does.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. A change of behaviour or a new feature is agreed here before a pull request (see CONTRIBUTING.md). Some known gaps are already in BACKLOG.md.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you are trying to do, for whom, and what stops you today.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose
+      description: How it would look to an app (an option of an action, a callback, a guide) and to the person at the palette. Say if it changes what the palette does today.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What else you considered
+      description: Other designs, and what you do today instead.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched the open and closed issues, and BACKLOG.md.
+          required: true
+        - label: I would like to make the pull request myself.

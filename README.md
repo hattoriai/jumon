@@ -268,6 +268,14 @@ task) builds the bundle, checks that `priv/static` holds only the four
 bundle files (`mix jumon.release_check`), publishes to Hex, and tags and
 pushes `v<version>`.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md):
+when a change needs an issue first, and what a pull request needs.
+Report a security problem privately, as
+[SECURITY.md](SECURITY.md)
+says.
+
 ## License
 
 Jumon is released under the MIT License. See `LICENSE`.
