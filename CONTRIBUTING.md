@@ -16,7 +16,7 @@ development server and run the tests is in the README, under
 - **A security problem.** Do not open an issue. See
   [SECURITY.md](SECURITY.md).
 
-Search the open and closed issues first, and [BACKLOG.md](BACKLOG.md):
+Search the open and closed issues first, and [BACKLOG.md](https://github.com/hattoriai/jumon/blob/main/BACKLOG.md):
 the idea may already be planned, or turned down for a reason given there.
 
 ## When a pull request needs an issue first
@@ -97,4 +97,4 @@ rest of the Elixir; `npm run typecheck` the TypeScript.
 ## License
 
 By contributing, you agree that your contribution is released under the
-MIT License of the project (see [LICENSE](LICENSE)).
+MIT License of the project (see [LICENSE](https://github.com/hattoriai/jumon/blob/main/LICENSE)).

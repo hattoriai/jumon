@@ -270,10 +270,10 @@ pushes `v<version>`.
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/hattoriai/jumon/blob/main/CONTRIBUTING.md):
+See [CONTRIBUTING.md](CONTRIBUTING.md):
 when a change needs an issue first, and what a pull request needs.
 Report a security problem privately, as
-[SECURITY.md](https://github.com/hattoriai/jumon/blob/main/SECURITY.md)
+[SECURITY.md](SECURITY.md)
 says.
 
 ## License
