@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/hattoriai/jumon/security/advisories/new
+    about: Report a security problem privately, not in a public issue.
+  - name: Documentation
+    url: https://hexdocs.pm/jumon
+    about: The guides cover actions, searching, arguments, shortcuts, history, testing and theming.
