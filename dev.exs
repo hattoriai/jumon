@@ -9,8 +9,8 @@
 #
 # The bundle rebuilds and the page reloads on a change.
 #
-# Query params of every page: `theme=sumi`, `dark=1`, `locale` (the words
-# of the palette).
+# Query params of every page: `theme=sumi`, `dark=1`, `sumi=smoke` (any of
+# Sumi's seven themes), `locale` (the words of the palette).
 #
 # Environment:
 #
@@ -406,19 +406,67 @@ end
 defmodule JumonDev.Layouts do
   @moduledoc """
   The root layout: the style sheets, the import map, the LiveSocket, and
-  the themes (`?theme=sumi`, `&dark=1`, or the Theme actions).
+  the themes (`?theme=sumi`, `&dark=1`, or the Theme actions). `?sumi=smoke`
+  (any of Sumi's seven themes) loads jumon-sumi.css on that theme of Sumi,
+  to see the palette in each.
   """
   use Phoenix.Component
 
+  # Sumi's themes, as the palette reads them: the page, the surface, the
+  # line, the text, the muted text, the accent, the text on it and the
+  # error (Sumi's own CSS needs Tailwind, which this app has not; these are
+  # its values).
+  @sumi_themes [
+    {"dark", "Ink", "oklch(12% 0.003 270)", "oklch(16% 0.004 270)", "oklch(20% 0.005 270)",
+     "oklch(95% 0.012 85)", 0.5, "#e84a1c", "oklch(12% 0.003 270)", "oklch(58% 0.22 25)"},
+    {"smoke", "Smoke", "oklch(27% 0.005 270)", "oklch(30.5% 0.006 270)", "oklch(34% 0.007 270)",
+     "oklch(92% 0.01 85)", 0.62, "oklch(72% 0.13 168)", "oklch(27% 0.005 270)",
+     "oklch(58% 0.22 25)"},
+    {"stone", "Stone", "oklch(20% 0.006 70)", "oklch(23.5% 0.007 70)", "oklch(27% 0.008 70)",
+     "oklch(95% 0.01 85)", 0.52, "oklch(78% 0.13 82)", "oklch(20% 0.006 70)",
+     "oklch(58% 0.22 25)"},
+    {"lacquer", "Lacquer", "oklch(14% 0.022 25)", "oklch(18% 0.026 25)", "oklch(22% 0.03 25)",
+     "oklch(93% 0.016 75)", 0.53, "oklch(63% 0.21 24)", "oklch(14% 0.022 25)",
+     "oklch(58% 0.22 25)"},
+    {"light", "Paper", "oklch(96% 0.01 85)", "oklch(93% 0.012 85)", "oklch(89% 0.014 80)",
+     "oklch(15% 0.003 270)", 0.65, "#e84a1c", "oklch(12% 0.003 270)", "oklch(55% 0.22 25)"},
+    {"snow", "Snow", "oklch(99.5% 0.001 270)", "oklch(97% 0.003 270)", "oklch(92.5% 0.005 270)",
+     "oklch(20% 0.006 270)", 0.65, "oklch(50% 0.17 262)", "oklch(100% 0 0)",
+     "oklch(55% 0.22 25)"},
+    {"silk", "Silk", "oklch(97.5% 0.012 350)", "oklch(95% 0.016 350)", "oklch(91.5% 0.02 350)",
+     "oklch(22% 0.012 350)", 0.65, "oklch(56% 0.21 358)", "oklch(100% 0 0)", "oklch(55% 0.22 25)"}
+  ]
+
+  @dark_themes ~w(dark smoke stone lacquer)
+
+  defp sumi_style(id) do
+    {_, _, page, surface, line, text, muted, accent, on_accent, error} =
+      List.keyfind(@sumi_themes, id, 0)
+
+    """
+    :root {
+      color-scheme: #{if id in @dark_themes, do: "dark", else: "light"};
+      --color-base-100: #{page}; --color-base-200: #{surface}; --color-base-300: #{line};
+      --color-base-content: #{text}; --sumi-text-muted: oklch(from #{text} l c h / #{muted});
+      --color-sumi-blade: #{accent}; --color-primary-content: #{on_accent}; --color-error: #{error};
+    }
+    """
+  end
+
   def root(assigns) do
+    look = assigns.conn.params["sumi"]
+    look = if List.keymember?(@sumi_themes, look, 0), do: look
+
     assigns =
       assigns
-      |> assign(:sumi, assigns.conn.params["theme"] == "sumi")
+      |> assign(:look, look)
+      |> assign(:themes, @sumi_themes)
+      |> assign(:sumi, assigns.conn.params["theme"] == "sumi" or look != nil)
       |> assign(:dark, assigns.conn.params["dark"] == "1")
 
     ~H"""
     <!DOCTYPE html>
-    <html lang="en" data-theme={if(@dark, do: "dark", else: "light")} class={@sumi && "sumi"}>
+    <html lang="en" data-theme={@look || if(@dark, do: "dark", else: "light")} class={@sumi && "sumi"}>
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -446,7 +494,11 @@ defmodule JumonDev.Layouts do
           .flash { padding: 0.5rem 0.75rem; border-radius: 6px; background: var(--card); border: 1px solid var(--line); margin-bottom: 1rem; }
           .hint { color: var(--muted); font-size: 0.875rem; margin-top: 2rem; }
           kbd { font-family: inherit; }
+          .themes { display: flex; flex-wrap: wrap; gap: 1rem; padding: 0.375rem 1.5rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 0.8125rem; }
+          .themes a { color: var(--muted); text-decoration: none; }
+          .themes a[aria-current="page"] { color: var(--ink); text-decoration: underline; text-decoration-color: var(--jumon-accent); text-underline-offset: 0.25em; }
         </style>
+        {@look && Phoenix.HTML.raw(~s(<style id="sumi-theme">) <> sumi_style(@look) <> "</style>")}
         <script type="importmap">
           {
             "imports": {
@@ -466,6 +518,7 @@ defmodule JumonDev.Layouts do
             document.documentElement.dataset.theme = theme.endsWith("dark") ? "dark" : "light"
             document.documentElement.classList.toggle("sumi", theme.startsWith("sumi"))
             document.getElementById("sumi").disabled = !theme.startsWith("sumi")
+            document.getElementById("sumi-theme")?.remove()
           })
 
           if (document.querySelector("[data-phx-main]")) {
@@ -482,6 +535,14 @@ defmodule JumonDev.Layouts do
         </script>
       </head>
       <body>
+        <nav class="themes" aria-label="Sumi's themes">
+          Sumi:
+          <a
+            :for={{id, name, _, _, _, _, _, _, _, _} <- @themes}
+            href={"?sumi=#{id}"}
+            aria-current={@look == id && "page"}
+          >{name}</a>
+        </nav>
         {@inner_content}
       </body>
     </html>
