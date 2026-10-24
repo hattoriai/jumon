@@ -7,6 +7,21 @@ and Jumon follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- The Sumi theme follows Sumi's seven themes and their accents: a danger
+  action and an error are rose where the accent is red's hue or near it
+  (Ink, Paper, Lacquer), and rust in Silk, so that the letters that
+  matched in a danger action show. `mix dev` shows the palette in each
+  (`?sumi=smoke`). See the Theming guide.
+
+### Fixed
+
+- The Sumi theme gave Sumi's dark themes other than Ink the light palette,
+  and Sumi's light themes other than Paper the dark one on a system in
+  dark mode. A danger action was below AA in Smoke and on Stone's active
+  row.
+
 ## [0.2.0] - 2026-10-17
 
 ### Added

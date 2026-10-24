@@ -17,8 +17,13 @@
  *
  * Dark and light: on a page with the Sumi themes, the palette follows them
  * (their colours change with data-theme). Without them, the built-in
- * palette follows the data-theme attribute ("dark" or "light") first, then
- * prefers-color-scheme.
+ * palette follows the data-theme attribute first (Sumi's seven: "dark",
+ * "smoke", "stone" and "lacquer" are dark; "light", "snow" and "silk"
+ * light), then prefers-color-scheme.
+ *
+ * Each Sumi theme has its own accent, which marks the matches and the
+ * active row. Where the red of a danger action is the accent's hue or near
+ * it, it is another in that theme, at the end of this file.
  */
 
 /* The Sumi palette, light. */
@@ -32,9 +37,12 @@
   --jumon-sumi-error: oklch(55% 0.22 25);
 }
 
-/* The Sumi palette, dark: data-theme="dark", or a dark preference on a page
-   that does not ask for light. */
-[data-theme="dark"] {
+/* The Sumi palette, dark: Sumi's dark themes (Ink, Smoke, Stone, Lacquer),
+   or a dark preference on a page that does not ask for a light one. */
+[data-theme="dark"],
+[data-theme="smoke"],
+[data-theme="stone"],
+[data-theme="lacquer"] {
   --jumon-sumi-base-100: oklch(12% 0.003 270);
   --jumon-sumi-base-200: oklch(16% 0.004 270);
   --jumon-sumi-base-300: oklch(22% 0.005 270);
@@ -44,7 +52,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme="light"], [data-theme="snow"], [data-theme="silk"]) {
     --jumon-sumi-base-100: oklch(12% 0.003 270);
     --jumon-sumi-base-200: oklch(16% 0.004 270);
     --jumon-sumi-base-300: oklch(22% 0.005 270);
@@ -92,4 +100,26 @@
   /* Shape and space */
   --jumon-space: 0.5rem;
   --jumon-icon-size: 16px;
+}
+
+/* A danger action, and an error, are red, and the matches and the active
+   row the theme's accent. Where the accent is red's hue or near it (blade
+   in Ink and Paper, and on a page with no theme; vermilion in Lacquer),
+   the red is rose instead, and in Silk, whose lotus is a red pink, rust:
+   so that a match in a danger action shows. */
+:root:where(:not([data-theme])),
+[data-theme="dark"],
+[data-theme="light"],
+[data-theme="lacquer"] {
+  --jumon-danger: color-mix(in oklab, oklch(57% 0.2 350) 85%, var(--jumon-text));
+}
+
+[data-theme="silk"] {
+  --jumon-danger: color-mix(in oklab, oklch(55% 0.16 45) 85%, var(--jumon-text));
+}
+
+/* Smoke's and Stone's pages are lighter than Ink's: a lighter red, for AA. */
+[data-theme="smoke"],
+[data-theme="stone"] {
+  --jumon-danger: color-mix(in oklab, oklch(68% 0.19 25) 85%, var(--jumon-text));
 }

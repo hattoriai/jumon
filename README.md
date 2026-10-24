@@ -106,7 +106,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
 
 Import the style sheet in `assets/css/app.css` (and the Sumi theme, if you
 want it: Sumi is the design system of Hattori AI, the makers of Jumon,
-Koyomi and Kotoba). Put these lines below the other `@import` lines of
+Koyomi and Kotoba; it follows Sumi's seven themes and their accents). Put these lines below the other `@import` lines of
 `app.css`:
 
 ```css
@@ -223,7 +223,8 @@ empties `priv/static` and writes the four files of the package:
 kind of action, children, two thousand pages of children, arguments,
 sources that answer at once and late, the history in memory, a page
 without LiveView (`/plain`), and the Sumi theme at `/?theme=sumi` (and
-`&dark=1`). Every page takes a `locale` query param. Set `PORT` for
+`&dark=1`), or in one of Sumi's seven themes at `?sumi=smoke` (the links
+at the top). Every page takes a `locale` query param. Set `PORT` for
 another port. An esbuild watcher rebuilds the bundle, and the page
 reloads.
 

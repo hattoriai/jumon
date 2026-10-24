@@ -61,7 +61,24 @@ Sumi is the design system of Hattori AI. Load `jumon-sumi.css` after
 It maps every property to the Sumi tokens of the page (the Sumi daisyUI
 themes), else to the short `--sumi-*` names, else to the Sumi palette:
 paper and ink, a blade orange for the active row's edge and the letters
-that matched. It follows `data-theme`, then `prefers-color-scheme`.
+that matched. On a page with the Sumi themes, the palette follows them.
+Without them, the built-in Sumi palette follows `data-theme` (one of
+Sumi's seven themes), then `prefers-color-scheme`.
+
+Each of Sumi's seven themes (Ink, Smoke, Stone and Lacquer; Paper, Snow
+and Silk) has its own accent, and the palette follows it:
+
+* the active row's edge, the letters that matched and the focus are the
+  accent;
+* a danger action and an error are red, but rose where the accent is
+  red's hue or near it (blade in Ink and Paper, vermilion in Lacquer), and
+  rust in Silk, whose lotus is a red pink, so that the letters that
+  matched in a danger action show; Smoke's and Stone's red is lighter,
+  for AA;
+* the dark themes have the dark palette.
+
+The development app (`mix dev`) shows the palette in each: `?sumi=smoke`,
+or the links at the top of its pages.
 
 ## Icons
 
