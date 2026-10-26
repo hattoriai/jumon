@@ -2,6 +2,18 @@
 
 ![Jumon — Commands for Phoenix](https://raw.githubusercontent.com/hattoriai/jumon/main/media/banner.png)
 
+<p>
+  <a href="https://hex.pm/packages/jumon">
+    <img alt="Hex Version" src="https://img.shields.io/hexpm/v/jumon.svg">
+  </a>
+  <a href="https://hexdocs.pm/jumon">
+    <img src="https://img.shields.io/badge/docs-hexdocs-blue" alt="HexDocs">
+  </a>
+  <a href="https://github.com/hattoriai/jumon/actions">
+    <img alt="CI Status" src="https://github.com/hattoriai/jumon/actions/workflows/ci.yml/badge.svg">
+  </a>
+</p>
+
 Jumon (呪文, "spell") is a command palette for Phoenix. It gives your app:
 
 * a palette for every LiveView of a `live_session`, opened with ⌘K (or
