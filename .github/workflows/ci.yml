@@ -33,7 +33,7 @@ jobs:
           version-file: .tool-versions
           version-type: strict
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             deps
@@ -42,7 +42,7 @@ jobs:
           restore-keys: |
             mix-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: priv/plts
           key: plt-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
@@ -120,7 +120,7 @@ jobs:
           otp-version: "27.2.2"
           version-type: strict
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             deps
@@ -196,7 +196,7 @@ jobs:
             assets/package-lock.json
             e2e/package-lock.json
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             deps
