@@ -223,7 +223,7 @@ jobs:
           CI: "true"
           E2E_BROWSERS: ${{ matrix.browser }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report-${{ matrix.browser }}
