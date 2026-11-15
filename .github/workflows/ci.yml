@@ -172,7 +172,10 @@ jobs:
   # One job for each browser engine. The Chromium job keeps the name "e2e".
   e2e:
     name: ${{ matrix.browser == 'chromium' && 'e2e' || format('e2e ({0})', matrix.browser) }}
-    runs-on: ubuntu-latest
+    # Pinned: Playwright 1.56.1 cannot install browsers on Ubuntu 26.04
+    # (the current ubuntu-latest). Move back to ubuntu-latest after a
+    # Playwright upgrade that supports it (1.65+ does).
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
